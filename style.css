@@ -1,0 +1,15 @@
+body{
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+tr {
+    height: 32px;
+}
+
+.cell {
+    background-color: #999;
+    width: 30px;
+    height: 30px;
+}
