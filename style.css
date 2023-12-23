@@ -12,4 +12,15 @@ td {
     background-color: #999;
     width: 30px;
     height: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.cell > span.mine {
+    display: inline-block;
+    font-size: 30px;
+    text-align: center;
+    line-height: 30pt;
+    font-weight: 900;
+    color: #960f0f;
 }
