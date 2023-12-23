@@ -47,12 +47,16 @@ span.mine-count.n3 {
 }
 
 span.mine-count.n4 {
-    color:#50007e;
+    color:#930993;
 }
 
 span.mine-count.n5, 
 span.mine-count.n6, 
 span.mine-count.n7, 
 span.mine-count.n8 {
-    color:#930993;
+    color:#50007e;
+}
+
+.spreaded {
+    background-color: #afff85;
 }
