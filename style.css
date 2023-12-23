@@ -2,6 +2,8 @@ body{
     margin: 0;
     display: flex;
     justify-content: center;
+    align-items: center;
+
 }
 
 td {
@@ -20,7 +22,37 @@ td {
     display: inline-block;
     font-size: 30px;
     text-align: center;
-    line-height: 30pt;
+    line-height: 30px;
+    font-weight: 900;
+}
+
+.cell > span.mine-count {
+    display: inline-block;
+    font-size: 20px;
+    text-align: center;
     font-weight: 900;
     color: #960f0f;
+}
+
+span.mine-count.n1 {
+    color:rgb(9, 9, 227);
+}
+
+span.mine-count.n2 {
+    color:rgb(0, 121, 0);
+}
+
+span.mine-count.n3 {
+    color:#960f0f;
+}
+
+span.mine-count.n4 {
+    color:#50007e;
+}
+
+span.mine-count.n5, 
+span.mine-count.n6, 
+span.mine-count.n7, 
+span.mine-count.n8 {
+    color:#930993;
 }
