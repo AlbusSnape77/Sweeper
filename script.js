@@ -71,6 +71,8 @@ function renderMineField(){
         cell.el.append(mineSpan);
     }
     checkAmbeientMinedCounts(gameState);
+    let messageEl = document.querySelector(".game-info > .message")
+    messageEl.innerText = "给菡菡做的扫雷❥(^_-)";
 }
 
 
@@ -136,9 +138,38 @@ function randomMineFieldNo(m, n, mineNums) {
 
 function handleClick(gameState,rowIdx,colIdx) {
     if (gameState.timing === null) {
+        startGame(gameState);
+       
+    }
+    
+
+    let cell = gameState.cells[rowIdx][colIdx]
+    if(cell.mined) {
+        explode(gameState, rowIdx, colIdx);
+
+    } else if (cell.mineCount == 0) {
+        spreadSafeField(gameState, rowIdx, colIdx)
+
+    } else if (cell.mineCount > 0) {
+        let cell = gameState.cells[rowIdx][colIdx];
+        if (!cell.spreaded){
+            cell.spreaded = true;
+            cell.el.classList.add("spreaded");
+
+    }
+    // console.log(gameState.cells[rowIdx][colIdx]);
+    }
+}
+
+function startGame (gameState) {
+    if (gameState.timing === null) {
+        let messageEl = document.querySelector(".game-info > .message")
+        messageEl.innerText = "菡菡正在扫雷中0.0";
+
         gameState.remaining = gameState.mineNums; 
         let remainingEl =  document.querySelector(".game-info > .remaining");
         remainingEl.innerHTML = `<span>${gameState.remaining}</span>`;
+    
 
         let timerEl =  document.querySelector(".game-info > .timer");
         let secondsEl = document.createElement("span");
@@ -147,27 +178,44 @@ function handleClick(gameState,rowIdx,colIdx) {
         timerEl.innerText = `${gameState.timing}`;
         // remainingEl.innerHTML = `<span>${gameState.remaining}</span>`;
 
-        setInterval(function() {
+        gameState.intervalID = setInterval(function() {
             gameState.timing += 1;
             timerEl.innerText = `${gameState.timing}`;
 
         }, 1000);
-    } 
-    
-
-    let cell = gameState.cells[rowIdx][colIdx]
-    if(cell.mined) {
-
-    } else if (cell.mineCount == 0) {
-        spreadSafeField(gameState, rowIdx, colIdx)
-
-    } else if (cell.mineCount > 0) {
-
     }
-    // console.log(gameState.cells[rowIdx][colIdx]);
+
+}
+
+function explode(gameState, rowIdx, colIdx) {
+    // let cell = gameState.cells[rowIdx][colIdx];
+    // cell.exploded = true;
+    // cell.el.classList.add("exploded");
+
+    for (let rowIdx = 0; rowIdx < gameState.m; rowIdx++) {
+        for (let colIdx = 0; colIdx < gameState.n; colIdx++) {
+            let cell = gameState.cells[rowIdx][colIdx];
+            if (cell.mined) {
+                cell.exploded = true;
+                cell.el.classList.add("exploded");
+            } else {
+                cell.el.classList.add("exploded");
+                cell.el.classList.add("spreaded");
+            }
+        }
+    }
+
+    clearInterval(gameState.intervalID);
+    let messageEl = document.querySelector(".game-info > .message")
+    messageEl.innerText = "菡菡被炸死啦！！";
 }
 
 function handleFlagging(gameState, rowIdx, colIdx) {
+    if (gameState.timing === null) {
+        startGame(gameState);
+       
+    }
+
     let cell = gameState.cells[rowIdx][colIdx];
     if (cell.spreaded) {
         return;
@@ -175,6 +223,7 @@ function handleFlagging(gameState, rowIdx, colIdx) {
 
     console.log(rowIdx, colIdx, cell);
     setFlag(cell, !cell.flag);
+
     if (cell.flag) {
         gameState.remaining -= 1; 
     } else {
@@ -202,13 +251,12 @@ function setFlag(cell, flag) {
 
 function spreadSafeField(gameState, rowIdx,colIdx) {
     let cell = gameState.cells[rowIdx][colIdx];
-    if (!cell.spreaded){
+    if (!cell.spreaded) {
         cell.spreaded = true;
         cell.el.classList.add("spreaded");
-        if  (cell.flag) {
-            setFlag(cell, false);
-        }
+
     }
+    
 
     for (let [drow,dcol] of directions) {
             let newRowIdx = rowIdx + drow, newColIdx = colIdx + dcol;
@@ -220,7 +268,7 @@ function spreadSafeField(gameState, rowIdx,colIdx) {
         if (cell.spreaded) {
             continue;
         }
-        if(!cell.spreaded && cell.mineCount == 0){
+        if(!cell.spreaded && cell.mineCount == 0) {
             spreadSafeField(gameState, newRowIdx,newColIdx); 
         }
 
@@ -234,8 +282,9 @@ function spreadSafeField(gameState, rowIdx,colIdx) {
 
 
         
+    
     }
-}
 
+}
 
 renderMineField();
