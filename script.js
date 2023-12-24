@@ -5,12 +5,13 @@ function renderMineField(){
     // let mineNums = 40;
 
     let gameState = {
-        m :15,
-        n :15,
-        mineNums: 40,
+        m :8,
+        n :8,
+        mineNums: 10,
         remaining: null,
         timing: null,// 游戏开始与否
         cells: null,
+        gameOver:false,
     }
 
 
@@ -24,18 +25,25 @@ function renderMineField(){
             let tdEl = document.createElement("td");
 
             let cellEl = document.createElement('div');
-            cellEl.className = "cell";
+            cellEl.className = "cell unclear";
 
             cellEl.onclick = function() {
+                if (gameState.gameOver) {
+                    return;
+                }
                 
                 handleClick(gameState, i, j);
             };  
 
             cellEl.oncontextmenu = function(event) {
+                if (gameState.gameOver) {
+                    return;
+                }
                 // console.log("contextmenu",i,j);
                 handleFlagging(gameState, i, j);
                 // event.stopPropagation();
                 // event.preventDefault();
+                
             };
 
             tdEl.append(cellEl);
@@ -54,7 +62,8 @@ function renderMineField(){
     gameState.cells = cells;
 
     // console.log(cells);
-    let mineFields = [79, 165, 19, 190, 170, 216, 156, 138, 21, 141, 151, 105, 168, 119, 111, 160, 144, 189, 80, 134, 78, 224, 38, 90, 53, 27, 95, 214, 59, 92, 125, 85, 179, 37, 180, 107, 74, 75, 122, 102];
+    let mineFields = randomMineFieldNo(gameState.m, gameState.n, gameState.mineNums);
+    // let mineFields = [79, 165, 19, 190, 170, 216, 156, 138, 21, 141, 151, 105, 168, 119, 111, 160, 144, 189, 80, 134, 78, 224, 38, 90, 53, 27, 95, 214, 59, 92, 125, 85, 179, 37, 180, 107, 74, 75, 122, 102];
     // console.log(mineFields);
     for (let cellNo of mineFields ) {
         let rowNo = Math.floor (cellNo / gameState.n);
@@ -73,6 +82,18 @@ function renderMineField(){
     checkAmbeientMinedCounts(gameState);
     let messageEl = document.querySelector(".game-info > .message")
     messageEl.innerText = "给菡菡做的扫雷❥(^_-)";
+
+    messageEl.onclick = function () {
+        let tableEl = document.querySelector("#mine-field");
+        tableEl.innerHTML = "";
+        // for ( let node of tableEl.childNodes) {
+        //     node.remove();
+        // }
+
+        
+        renderMineField();
+        
+    }
 }
 
 
@@ -154,11 +175,15 @@ function handleClick(gameState,rowIdx,colIdx) {
         let cell = gameState.cells[rowIdx][colIdx];
         if (!cell.spreaded){
             cell.spreaded = true;
+            cell.el.classList.remove("unclear"); 
             cell.el.classList.add("spreaded");
 
+        }
     }
-    // console.log(gameState.cells[rowIdx][colIdx]);
+    if (checkSuccess(gameState)) {
+        gameSuccess(gameState)
     }
+        // console.log(gameState.cells[rowIdx][colIdx]);
 }
 
 function startGame (gameState) {
@@ -187,6 +212,27 @@ function startGame (gameState) {
 
 }
 
+function checkSuccess(gameState) {
+    let unspreadCount = 0;
+    for (let rowIdx = 0; rowIdx < gameState.m; rowIdx++) {
+        for (let colIdx = 0; colIdx < gameState.n; colIdx++) {
+            let cell = gameState.cells[rowIdx][colIdx];
+            if (cell.flag) {
+                continue;
+            }
+            if (!cell.spreaded) {
+                unspreadCount += 1;
+            }
+
+        }
+    
+    }
+
+    return gameState.remaining === unspreadCount; 
+
+    
+}
+
 function explode(gameState, rowIdx, colIdx) {
     // let cell = gameState.cells[rowIdx][colIdx];
     // cell.exploded = true;
@@ -198,16 +244,45 @@ function explode(gameState, rowIdx, colIdx) {
             if (cell.mined) {
                 cell.exploded = true;
                 cell.el.classList.add("exploded");
+                cell.el.classList.remove("unclear");
             } else {
                 cell.el.classList.add("exploded");
                 cell.el.classList.add("spreaded");
+                cell.el.classList.remove("unclear");
             }
         }
     }
 
     clearInterval(gameState.intervalID);
+
     let messageEl = document.querySelector(".game-info > .message")
     messageEl.innerText = "菡菡被炸死啦！！";
+
+    gameState.gameOver = true;
+}
+
+function gameSuccess(gameState) { 
+    for (let rowIdx = 0; rowIdx < gameState.m; rowIdx++) {
+        for (let colIdx = 0; colIdx < gameState.n; colIdx++) {
+            let cell = gameState.cells[rowIdx][colIdx];
+            if (cell.mined) {
+                cell.exploded = true;
+                cell.el.classList.add("success");
+            } else {
+                cell.el.classList.add("success");
+                cell.el.classList.add("spreaded");
+            }
+        }
+    }
+    clearInterval(gameState.intervalID);
+    
+    let messageEl = document.querySelector(".game-info > .message")
+    messageEl.innerText = "菡菡通关啦！！";
+    messageEl.classList.add('success');
+
+    gameState.gameOver = true;
+
+
 }
 
 function handleFlagging(gameState, rowIdx, colIdx) {
@@ -231,6 +306,10 @@ function handleFlagging(gameState, rowIdx, colIdx) {
     }
     let remainingEl =  document.querySelector(".game-info > .remaining > span");
     remainingEl.innerText = `${gameState.remaining}`;
+
+    if (checkSuccess(gameState)) {
+        gameSuccess(gameState)
+    }
 }
 
 function setFlag(cell, flag) {
@@ -253,6 +332,7 @@ function spreadSafeField(gameState, rowIdx,colIdx) {
     let cell = gameState.cells[rowIdx][colIdx];
     if (!cell.spreaded) {
         cell.spreaded = true;
+        cell.el.classList.remove("unclear");
         cell.el.classList.add("spreaded");
 
     }
@@ -273,6 +353,7 @@ function spreadSafeField(gameState, rowIdx,colIdx) {
         }
 
         cell.spreaded = true;
+        cell.el.classList.remove("unclear");
         cell.el.classList.add("spreaded");
 
         if  (cell.flag) {

@@ -39,18 +39,29 @@ td {
 }
 
 .cell {
-    background-color: #999;
+    /* background-color: #999; */
     width: 30px;
     height: 30px;
     display: flex;
     justify-content: center;
+
+    border-width: 4px;
+    border-style: outset;
+    box-sizing: border-box;
+    border-color: #aaa;
+    background-color: #a1a1a1
+}
+
+.cell.unclear > span.mine-count,
+.cell.unclear > span.mine {
+    display: none;
 }
 
 .cell > span.mine {
     display: inline-block;
     font-size: 30px;
     text-align: center;
-    /* line-height: 30px; */
+    /* line-height: -150px; */
     font-weight: 900;
     color: #960f0f;
 }
@@ -87,13 +98,21 @@ span.mine-count.n8 {
 }
 
 .spreaded {
-    background-color: #afff85;
+    background-color: #63dabfad;
 }
 
 .cell.exploded {
-    background-color: #960f0f;
+    background-color: #ff0000;
 }
 
 .cell.exploded.spreaded {
-    background-color: #98decaf0;
+    background-color: #63dabfad;
+}
+
+.cell.success {
+    background-color: #ffb0f8f0;
+}
+
+.cell.success.spreaded {
+    background-color: #ffb0f8f0;
 }
