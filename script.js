@@ -7,7 +7,7 @@ function renderMineField(){
     let gameState = {
         m :15,
         n :15,
-        mineCount: 40,
+        mineNums: 40,
         remaining: null,
         timing: null,// 游戏开始与否
         cells: null,
@@ -135,6 +135,26 @@ function randomMineFieldNo(m, n, mineNums) {
 }
 
 function handleClick(gameState,rowIdx,colIdx) {
+    if (gameState.timing === null) {
+        gameState.remaining = gameState.mineNums; 
+        let remainingEl =  document.querySelector(".game-info > .remaining");
+        remainingEl.innerHTML = `<span>${gameState.remaining}</span>`;
+
+        let timerEl =  document.querySelector(".game-info > .timer");
+        let secondsEl = document.createElement("span");
+        timerEl.append(secondsEl);
+        gameState.timing = 0;
+        timerEl.innerText = `${gameState.timing}`;
+        // remainingEl.innerHTML = `<span>${gameState.remaining}</span>`;
+
+        setInterval(function() {
+            gameState.timing += 1;
+            timerEl.innerText = `${gameState.timing}`;
+
+        }, 1000);
+    } 
+    
+
     let cell = gameState.cells[rowIdx][colIdx]
     if(cell.mined) {
 
@@ -155,6 +175,13 @@ function handleFlagging(gameState, rowIdx, colIdx) {
 
     console.log(rowIdx, colIdx, cell);
     setFlag(cell, !cell.flag);
+    if (cell.flag) {
+        gameState.remaining -= 1; 
+    } else {
+        gameState.remaining += 1; 
+    }
+    let remainingEl =  document.querySelector(".game-info > .remaining > span");
+    remainingEl.innerText = `${gameState.remaining}`;
 }
 
 function setFlag(cell, flag) {
