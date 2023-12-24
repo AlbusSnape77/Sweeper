@@ -1,15 +1,26 @@
 function renderMineField(){
     let tableEl = document.querySelector("#mine-field");
-    let m = 15 ;
-    let n = 15 ;
-    let mineNums = 40;
+    // let m = 15 ;
+    // let n = 15 ;
+    // let mineNums = 40;
+
+    let gameState = {
+        m :15,
+        n :15,
+        mineCount: 40,
+        remaining: null,
+        timing: null,// 游戏开始与否
+        cells: null,
+    }
+
+
 
     let cells = [];
 
-    for (let i = 0; i < m; i++){
+    for (let i = 0; i < gameState.m; i++){
         let trEl = document.createElement("tr");
         let row = [];
-        for (let j = 0; j < n; j++){
+        for (let j = 0; j < gameState.n; j++){
             let tdEl = document.createElement("td");
 
             let cellEl = document.createElement('div');
@@ -17,12 +28,12 @@ function renderMineField(){
 
             cellEl.onclick = function() {
                 
-                handleClick(i, j, cells, m, n);
+                handleClick(gameState, i, j);
             };  
 
             cellEl.oncontextmenu = function(event) {
-                console.log("contextmenu",i,j);
-                handleFlagging(i, j, cells, m, n);
+                // console.log("contextmenu",i,j);
+                handleFlagging(gameState, i, j);
                 // event.stopPropagation();
                 // event.preventDefault();
             };
@@ -40,12 +51,14 @@ function renderMineField(){
         tableEl.append(trEl);
     }
 
-    console.log(cells);
+    gameState.cells = cells;
+
+    // console.log(cells);
     let mineFields = [79, 165, 19, 190, 170, 216, 156, 138, 21, 141, 151, 105, 168, 119, 111, 160, 144, 189, 80, 134, 78, 224, 38, 90, 53, 27, 95, 214, 59, 92, 125, 85, 179, 37, 180, 107, 74, 75, 122, 102];
-    console.log(mineFields);
+    // console.log(mineFields);
     for (let cellNo of mineFields ) {
-        let rowNo = Math.floor (cellNo / n);
-        let colNo = cellNo % n;
+        let rowNo = Math.floor (cellNo / gameState.n);
+        let colNo = cellNo % gameState.n;
         console.log(cellNo, rowNo , colNo);
 
         let cell = cells[rowNo][colNo];
@@ -57,7 +70,7 @@ function renderMineField(){
 
         cell.el.append(mineSpan);
     }
-    checkAmbeientMinedCounts(cells, m, n);
+    checkAmbeientMinedCounts(gameState);
 }
 
 
@@ -68,10 +81,10 @@ let directions = [
     [-1,1],[0,1],[1,1]
 ]
 
-function checkAmbeientMinedCounts(cells, m, n) {
-    for (let rowIdx = 0; rowIdx < m; rowIdx++){
-        for (let colIdx = 0; colIdx < n; colIdx++){
-            let cell = cells[rowIdx][colIdx];
+function checkAmbeientMinedCounts(gameState) {
+    for (let rowIdx = 0; rowIdx < gameState.m; rowIdx++){
+        for (let colIdx = 0; colIdx < gameState.n; colIdx++){
+            let cell = gameState.cells[rowIdx][colIdx];
             if (cell.mined) {
                 continue;
             }
@@ -79,11 +92,11 @@ function checkAmbeientMinedCounts(cells, m, n) {
             let mineCount = 0;
             for (let [drow,dcol] of directions) {
                 let newRowIdx = rowIdx + drow, newColIdx = colIdx + dcol;
-                if (newRowIdx < 0 || newRowIdx >= m || 
-                    newColIdx < 0 || newColIdx >= n) {
+                if (newRowIdx < 0 || newRowIdx >= gameState.m || 
+                    newColIdx < 0 || newColIdx >= gameState.n) {
                     continue;
                 }
-                if (cells[newRowIdx][newColIdx].mined) {
+                if (gameState. cells[newRowIdx][newColIdx].mined) {
                     mineCount += 1;
                 }                
             }
@@ -121,21 +134,21 @@ function randomMineFieldNo(m, n, mineNums) {
     return mines;
 }
 
-function handleClick(rowIdx,colIdx, cells, m, n) {
-    let cell = cells[rowIdx][colIdx]
+function handleClick(gameState,rowIdx,colIdx) {
+    let cell = gameState.cells[rowIdx][colIdx]
     if(cell.mined) {
 
     } else if (cell.mineCount == 0) {
-        spreadSafeField(rowIdx,colIdx, cells, m, n)
+        spreadSafeField(gameState, rowIdx, colIdx)
 
     } else if (cell.mineCount > 0) {
 
     }
-    console.log(cells[rowIdx][colIdx]);
+    // console.log(gameState.cells[rowIdx][colIdx]);
 }
 
-function handleFlagging(rowIdx, colIdx, cells, m, n) {
-    let cell = cells[rowIdx][colIdx];
+function handleFlagging(gameState, rowIdx, colIdx) {
+    let cell = gameState.cells[rowIdx][colIdx];
     if (cell.spreaded) {
         return;
     }
@@ -160,8 +173,8 @@ function setFlag(cell, flag) {
     }
 }
 
-function spreadSafeField(rowIdx,colIdx, cells, m, n) {
-    let cell = cells[rowIdx][colIdx];
+function spreadSafeField(gameState, rowIdx,colIdx) {
+    let cell = gameState.cells[rowIdx][colIdx];
     if (!cell.spreaded){
         cell.spreaded = true;
         cell.el.classList.add("spreaded");
@@ -172,16 +185,16 @@ function spreadSafeField(rowIdx,colIdx, cells, m, n) {
 
     for (let [drow,dcol] of directions) {
             let newRowIdx = rowIdx + drow, newColIdx = colIdx + dcol;
-            if (newRowIdx < 0 || newRowIdx >= m || 
-                newColIdx < 0 || newColIdx >= n) {
+            if (newRowIdx < 0 || newRowIdx >= gameState.m || 
+                newColIdx < 0 || newColIdx >= gameState.n) {
                 continue;
             }
-        let cell = cells[newRowIdx][newColIdx];
+        let cell = gameState.cells[newRowIdx][newColIdx];
         if (cell.spreaded) {
             continue;
         }
         if(!cell.spreaded && cell.mineCount == 0){
-            spreadSafeField(newRowIdx,newColIdx, cells, m, n); 
+            spreadSafeField(gameState, newRowIdx,newColIdx); 
         }
 
         cell.spreaded = true;

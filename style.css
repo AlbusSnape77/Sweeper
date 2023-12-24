@@ -5,6 +5,29 @@ body{
     align-items: center;
 
 }
+/*--------------------------*/
+.game-info {
+    background-color: #aaa;
+    display: flex;
+    align-items: center;
+}
+
+.game-info > .padding {
+    flex-grow: 1;
+}
+
+.game-info > .remaining {
+    width: 5em;
+    height: 4ex;
+    background-color: antiquewhite; 
+}
+
+.game-info > .timer {
+    width: 5em;
+    height: 4ex;
+    background-color: antiquewhite;
+}
+
 
 td {
     height: 32px;
@@ -22,8 +45,9 @@ td {
     display: inline-block;
     font-size: 30px;
     text-align: center;
-    line-height: 30px;
+    /* line-height: 30px; */
     font-weight: 900;
+    color: #960f0f;
 }
 
 .cell > span.mine-count {
