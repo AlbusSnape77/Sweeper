@@ -5,11 +5,16 @@ body{
     align-items: center;
 
 }
-/*--------------------------*/
+#mine-field {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
 .game-info {
-    background-color: #aaa;
+    background-color: #dde5ff;
     display: flex;
     align-items: center;
+    user-select: none;
 }
 
 .game-info > .padding {
@@ -19,19 +24,46 @@ body{
 .game-info > .remaining {
     width: 5em;
     height: 4ex;
-    background-color: antiquewhite; 
+    background-color: rgb(175 228 236); 
 }
 
 .game-info > .timer {
     width: 5em;
     height: 4ex;
-    background-color: antiquewhite;
+    background-color: rgb(175 228 236);
 }
 
 .game-info > .message {
     width: 10em;
     font-size: 20px;
+    user-select: none;
 }
+
+.game-buttons {
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+}
+
+.game-buttons > button {
+    width: 5em;
+    height: 4ex;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    background-color: #aaa;
+    color: white;
+    font-size: 20px;
+}
+
+.game-buttons > button:hover {
+    background-color: #888;
+}
+
+.game-buttons > button:active {
+    background-color: #666;
+}
+
 
 
 td {
@@ -58,10 +90,9 @@ td {
 }
 
 .cell > span.mine {
-    display: inline-block;
-    font-size: 30px;
+    line-height: 18px;
+    font-size: 28px;
     text-align: center;
-    /* line-height: -150px; */
     font-weight: 900;
     color: #960f0f;
 }
@@ -99,10 +130,12 @@ span.mine-count.n8 {
 
 .spreaded {
     background-color: #63dabfad;
+    user-select: none;
 }
 
 .cell.exploded {
     background-color: #ff0000;
+    user-select: none;
 }
 
 .cell.exploded.spreaded {
@@ -115,4 +148,10 @@ span.mine-count.n8 {
 
 .cell.success.spreaded {
     background-color: #ffb0f8f0;
+}
+
+.flag {
+    font-size: 30px;
+    line-height: 20px;
+    font-weight: 900;
 }
